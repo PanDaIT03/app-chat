@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ public class DangnhapApp extends AppCompatActivity {
     EditText phoneInput;
     Button sendOtp;
     ProgressBar progressBar;
+    String countryCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,15 +32,23 @@ public class DangnhapApp extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
 
         countryCodePicker.registerCarrierNumberEditText(phoneInput);
-        String phoneNumber = countryCodePicker.getFullNumber();
+        countryCodePicker.setOnCountryChangeListener(new CountryCodePicker.OnCountryChangeListener() {
+            @Override
+            public void onCountrySelected() {
+                countryCode = countryCodePicker.getSelectedCountryCodeWithPlus();
+                Log.d("phone", countryCode);
+            }
+        });
 
         sendOtp.setOnClickListener((v) -> {
             if(!countryCodePicker.isValidFullNumber()){
                 phoneInput.setError("Số điện thoại không đúng");
                 return;
             }
+
             Intent intent = new Intent(DangnhapApp.this,otp.class);
-            intent.putExtra("phone", phoneNumber);
+            intent.putExtra("phone", countryCode + phoneInput.getText());
+            Log.d("phone", countryCode + phoneInput.getText());
             startActivity(intent);
         });
     }

@@ -43,17 +43,18 @@ public class otp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp);
 
-        otpInput =findViewById(R.id.login_otp);
+        otpInput = findViewById(R.id.login_otp);
         Next = findViewById(R.id.login_next_btn);
         progressBar = findViewById(R.id.login_progress_bar);
         resendotp = findViewById(R.id.resend_otp_textview);
 
         phoneNumber = getIntent().getExtras().getString("phone");
 
-//        sendOtp(phoneNumber,false);
-        Log.d("phone", phoneNumber);
+        sendOtp(phoneNumber, false);
+        Log.d("intent", phoneNumber);
     }
-    void sendOtp(String phoneNumber, boolean isResend){
+
+    void sendOtp(String phoneNumber, boolean isResend) {
         setInprogress(true);
         PhoneAuthOptions.Builder builder =
                 PhoneAuthOptions.newBuilder(mAuth)
@@ -69,7 +70,7 @@ public class otp extends AppCompatActivity {
 
                             @Override
                             public void onVerificationFailed(@NonNull FirebaseException e) {
-                                AndroidUtills.showToast(getApplicationContext(),"Mã OTP không đúng!");
+                                AndroidUtills.showToast(getApplicationContext(), "Mã OTP không đúng!");
                                 setInprogress(false);
                             }
 
@@ -78,26 +79,31 @@ public class otp extends AppCompatActivity {
                                 super.onCodeSent(s, forceResendingToken);
                                 verificationCode = s;
                                 resendingToken = forceResendingToken;
-                                AndroidUtills.showToast(getApplicationContext(),"Mã OTP chính xác!");
+                                AndroidUtills.showToast(getApplicationContext(), "Mã OTP chính xác!");
                                 setInprogress(false);
+
+                                Intent intent = new Intent(otp.this, DangnhapProfile.class);
+                                startActivity(intent);
                             }
                         });
-        if(isResend){
+        if (isResend) {
             PhoneAuthProvider.verifyPhoneNumber(builder.setForceResendingToken(resendingToken).build());
-        }else {
+        } else {
             PhoneAuthProvider.verifyPhoneNumber(builder.build());
         }
     }
-    void setInprogress(boolean inprogress){
-        if(inprogress){
+
+    void setInprogress(boolean inprogress) {
+        if (inprogress) {
             progressBar.setVisibility(View.VISIBLE);
             Next.setVisibility(View.GONE);
-        }else{
+        } else {
             progressBar.setVisibility(View.GONE);
             Next.setVisibility(View.VISIBLE);
         }
     }
-    void signIn(PhoneAuthCredential phoneAuthCredential){
+
+    void signIn(PhoneAuthCredential phoneAuthCredential) {
 
     }
 }
